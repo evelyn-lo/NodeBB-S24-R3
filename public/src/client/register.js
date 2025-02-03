@@ -123,6 +123,7 @@ define('forum/register', [
             showError(username_notify, '[[error:username-too-long]]');
         } else if (!utils.isUserNameValid(username) || !userslug) {
             showError(username_notify, '[[error:invalid-username]]');
+
         } else {
             Promise.allSettled([
                 api.head(`/users/bySlug/${username}`, {}),
@@ -131,7 +132,8 @@ define('forum/register', [
                 if (results.every(obj => obj.status === 'rejected')) {
                     showSuccess(username_notify, successIcon);
                 } else {
-                    showError(username_notify, '[[error:username-taken]]');
+                    const suggestedUsername = username + "suffix";
+                    showError(username_notify, `[[error:username-taken]] Try: <strong>${suggestedUsername}</strong>`);
                 }
 
                 callback();
@@ -139,6 +141,7 @@ define('forum/register', [
         }
     }
 
+ 
     function validatePassword(password, password_confirm) {
         const password_notify = $('#password-notify');
         const password_confirm_notify = $('#password-confirm-notify');
